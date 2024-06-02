@@ -58,6 +58,10 @@ module HsbcPdfStatementParser
       # if we have 6 columns, we’re all good…
       return %i{date type details paid_out paid_in balance} if indices.length == 6
 
+      # if we have 4 columns, probably the total balance never got printed and only payments in were made.
+      # TODO: add a more sophisticated check to work out if paid_in or paid_out is the only column present
+      return %i{date type details paid_out} if indices.length == 4
+
       # if a statement contains no payments in or no payments out, it’ll only have 5 columns, so we need to work out
       # which the additional column is
       # We can do this with an assumption that the ‘paid out’ column is usually at around 2/3 of the total line length…

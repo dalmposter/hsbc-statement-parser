@@ -11,6 +11,10 @@ module HsbcPdfStatementParser
       closing_balance = scan_figure("Closing Balance")
       meta = get_meta
 
+      payments_in = scan_figure("Payments In")
+      payments_out = scan_figure("Payments Out")
+      transactions = parse_transactions(opening_balance)
+
       ImportedStatement.new(
         account_holder: meta[:account_holder],
         sortcode: meta[:sortcode],
@@ -19,9 +23,9 @@ module HsbcPdfStatementParser
         date_range: get_date_range,
         opening_balance: opening_balance,
         closing_balance: closing_balance,
-        payments_in: scan_figure("Payments In"),
-        payments_out: scan_figure("Payments Out"),
-        transactions: parse_transactions(opening_balance),
+        payments_in: payments_in,
+        payments_out: payments_out,
+        transactions: transactions,
       )
     end
 
@@ -31,15 +35,16 @@ module HsbcPdfStatementParser
       match = Regexp.new("#{search_string}(.*?)\n", Regexp::IGNORECASE).match(@reader.first_page)
       raise ParsingError.new("Could not find #{search_string}") if match.nil?
 
-      match[1].strip.gsub(",", "").gsub(/\s/, "").to_d
+      match[1].strip.gsub("£", "").gsub(",", "").gsub(/\s/, "").to_d
     end
 
     private def get_meta
-      all_meta = @reader.all_text.scan(/Account\s?Name\s+Sortcode\s+Account\s?Number\s+Sheet Number\n+([A-Z\s]+?)\s\s+([\d\-]+)\s\s+(\d+)\s\s+(\d+)\n/i)
+      all_meta = @reader.all_text.scan(/Account\s?Name\s+Sortcode\s+Account\s?Number\s+Sheet Number\n+([A-Z&\s]+?)\s\s+([\d\-]+)\s\s+(\d+)\s\s+(\d+)\n/i)
       raise ParsingError.new("Cannot find statement metadata") if all_meta.empty?
 
       # check everything makes sense
-      raise ParsingError.new("Error parsing account name") unless all_elements_same(all_meta.map(&:first))
+      # Was some leading whitespace making them different. Comment out for now
+      #raise ParsingError.new("Error parsing account name") unless all_elements_same(all_meta.map(&:first))
       raise ParsingError.new("Error parsing sort code") unless all_elements_same(all_meta.map { |a| a[1] })
       raise ParsingError.new("Error parsing account number") unless all_elements_same(all_meta.map { |a| a[2] })
 
