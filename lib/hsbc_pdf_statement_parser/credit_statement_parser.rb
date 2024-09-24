@@ -1,5 +1,5 @@
-module HsbcPdfStatementParser
-  class StatementParser
+module HsbcPdfCreditStatementParser
+  class CreditStatementParser
     attr_reader :_statement_lines
 
     def initialize(filename)
@@ -7,20 +7,20 @@ module HsbcPdfStatementParser
     end
 
     def parse
-      opening_balance = scan_figure("Opening Balance")
-      closing_balance = scan_figure("Closing Balance")
-      meta = get_meta
+      opening_balance = scan_figure("Previous Balance")
+      closing_balance = scan_figure("New Balance")
+      #meta = get_meta
 
-      payments_in = scan_figure("Payments In")
-      payments_out = scan_figure("Payments Out")
+      payments_in = scan_figure("Credits")
+      payments_out = scan_figure("Debits")
       transactions = parse_transactions(opening_balance)
 
       ImportedStatement.new(
-        account_holder: meta[:account_holder],
-        sortcode: meta[:sortcode],
-        account_number: meta[:account_no],
-        sheets: meta[:sheets],
-        date_range: get_date_range,
+        #account_holder: meta[:account_holder],
+        #sortcode: meta[:sortcode],
+        #account_number: meta[:account_no],
+        #sheets: meta[:sheets],
+        #date_range: get_date_range,
         opening_balance: opening_balance,
         closing_balance: closing_balance,
         payments_in: payments_in,
@@ -77,7 +77,7 @@ module HsbcPdfStatementParser
 
     private def parse_transactions(opening_balance)
       # Get the raw information out of the PDF text
-      parser = TransactionParser.new
+      parser = CreditTransactionParser.new
       pages = @reader.statement_blocks
       transactions = parser.parse(pages)
 

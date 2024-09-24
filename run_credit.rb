@@ -1,16 +1,16 @@
-require 'hsbc_pdf_statement_parser'
+require 'hsbc_pdf_credit_statement_parser'
 require 'csv'
 
-for statement in ["2024-09-19_Statement.pdf"]
-    parsed = HsbcPdfStatementParser.parse( statement )
+for statement in ["2024-09-23_Statement.pdf"]
+    parsed = HsbcPdfCreditStatementParser.parse( statement )
 
     CSV.open('output/' + statement + '.csv', 'w') do |csv|
         #csv << ["Paid", "Date", "Vendor", "Category", "Category (Simplified)", "Paid`", "Balance", "Sheet"]
         parsed.transactions.each do |tx|
             printf( 
-                "%s {%-3s} %-40s %7.02f  |  %7.02f\n", 
+                "%s %s %-40s %7.02f  |  %7.02f\n", 
+                tx.date_received,
                 tx.date, 
-                tx.type,
                 tx.details.lines.first.strip, 
                 tx.change,
                 tx.balance
@@ -22,7 +22,7 @@ for statement in ["2024-09-19_Statement.pdf"]
                 '',
                 '',
                 '',
-                Float(tx.balance),
+                Float(tx.balance) * -1,
                 ''
             ]
         end
