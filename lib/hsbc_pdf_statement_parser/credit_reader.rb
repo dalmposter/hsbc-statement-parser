@@ -28,7 +28,9 @@ module HsbcPdfCreditStatementParser
                 # Matcher for middle pages
                 match = page.text.match(/Sheet\s?Number\s?.\s?of\s?.\s?[^\n]+\s*(.*)$/im)
               end
-              match ? match[1] : nil
+
+              # Fix for if the last page just contains informational text
+              match ? match[1].start_with?('We now provide more information') ? nil : match[1] : nil
             end
           end.compact
         end
