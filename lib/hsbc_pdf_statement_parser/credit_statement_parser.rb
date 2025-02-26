@@ -7,7 +7,7 @@ module HsbcPdfCreditStatementParser
     end
 
     def parse
-      opening_balance = scan_figure("Previous Balance")
+      opening_balance = 0 - scan_figure("Previous Balance")
       closing_balance = scan_figure("New Balance")
       #meta = get_meta
 
