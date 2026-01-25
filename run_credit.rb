@@ -1,7 +1,7 @@
 require 'hsbc_pdf_credit_statement_parser'
 require 'csv'
 
-for statement in ["2025-02-24_Statement.pdf"]
+for statement in ["2026-01-24_Statement.pdf"]
     parsed = HsbcPdfCreditStatementParser.parse( statement )
 
     CSV.open('output/' + statement + '.csv', 'w') do |csv|
