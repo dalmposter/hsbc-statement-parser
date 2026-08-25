@@ -18,8 +18,12 @@ module HsbcPdfCreditStatementParser
             if i == 0
               nil
             else
-              # Matcher for the first page
-              match = page.text.match(/Received\s*By\s*Us\s*Transaction\s*Date\s*Details\s*(.*)$/im)
+              # Matcher for when the first page is also the last page
+              match = page.text.match(/Received\s*By\s*Us\s*Transaction\s*Date\s*Details\s*(.*)\sSummary\s?Of\s?Interest\s?On\s?This\sStatement/im)
+              if match.nil?
+                # Matcher for the first page
+                match = page.text.match(/Received\s*By\s*Us\s*Transaction\s*Date\s*Details\s*(.*)$/im)
+              end
               if match.nil?
                 # Matcher for last page
                 match = page.text.match(/Sheet\s?Number\s?.\s?of\s?.\s?[^\n]+\n(.*)\sSummary\s?Of\s?Interest\s?On\s?This\sStatement/im)

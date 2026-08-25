@@ -91,3 +91,6 @@ Aside from the new properties added to the main Statement type, the biggest diff
 ---
 
 Share and enjoy
+
+### run.rb
+bundle exec ruby run_credit.rb
